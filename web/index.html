@@ -1,19 +1,6 @@
 <!doctype html>
 <html>
   <head>
-    <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
     <base href="$FLUTTER_BASE_HREF" />
 
     <meta charset="UTF-8" />
@@ -106,11 +93,31 @@
           background-color: #11140e;
         }
       }
+
+      /* Fade-out animation for the HTML splash */
+      #splash {
+        transition: opacity 0.4s ease-out;
+      }
+      #splash.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
     </style>
+
     <script id="splash-screen-script">
       function removeSplashFromWeb() {
-        document.getElementById("splash")?.remove();
-        document.getElementById("splash-branding")?.remove();
+        const splash = document.getElementById("splash");
+        const branding = document.getElementById("splash-branding");
+
+        if (splash) {
+          // Fade out, then remove from DOM
+          splash.classList.add("hidden");
+          setTimeout(() => {
+            splash.remove();
+            if (branding) branding.remove();
+          }, 400);
+        }
+
         document.body.style.background = "transparent";
       }
     </script>
@@ -143,6 +150,23 @@
       />
     </picture>
 
-    <script src="flutter_bootstrap.js" async=""></script>
+    <!--
+      Use the Flutter loader API instead of a plain async script tag.
+      This gives us the `onEntrypointLoaded` hook so we control exactly
+      when Flutter starts and when the HTML splash is removed.
+    -->
+    <script src="flutter_bootstrap.js"></script>
+    <script>
+      _flutter.loader.load({
+        onEntrypointLoaded: async function (engineInitializer) {
+          // Engine is downloaded — Flutter is about to start.
+          // The HTML splash is still visible at this point.
+          const appRunner = await engineInitializer.initializeEngine();
+          await appRunner.runApp();
+          // Flutter's first frame is painted; remove the HTML splash.
+          removeSplashFromWeb();
+        },
+      });
+    </script>
   </body>
 </html>
