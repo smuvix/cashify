@@ -164,6 +164,7 @@ class _AppScaffoldState extends State<AppScaffold> {
           ),
         ),
       ),
+      floatingActionButton: widget.floatingActionButton,
       body: widget.body,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

@@ -26,3 +26,15 @@ const List<IconData> kSelectableIcons = [
   Icons.attach_money_outlined,
   Icons.more_horiz_rounded,
 ];
+
+int iconToIndex(IconData icon) {
+  final idx = kSelectableIcons.indexOf(icon);
+  return idx == -1 ? 0 : idx;
+}
+
+IconData iconFromStorageValue(dynamic value) {
+  if (value is int && value >= 0 && value < kSelectableIcons.length) {
+    return kSelectableIcons[value];
+  }
+  return kSelectableIcons[0];
+}

@@ -41,8 +41,12 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
       text: widget.category?.description ?? '',
     );
     _type = widget.category?.type ?? CategoryType.expense;
-    _icon = widget.category?.icon ?? Icons.label_outline;
     _color = widget.category?.color ?? Colors.blue;
+
+    final stored = widget.category?.icon;
+    _icon = (stored != null && kSelectableIcons.contains(stored))
+        ? stored
+        : kSelectableIcons.first;
   }
 
   @override
@@ -221,18 +225,16 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
                 const _FieldDivider(),
                 _LabeledField(
                   label: 'Description',
-                  required: true,
                   child: TextFormField(
                     controller: _descController,
                     decoration: _fieldDecoration(
-                      hint: 'What is this category for?',
+                      hint: 'Optional short description',
+                      icon: Icons.notes_rounded,
                     ),
-                    maxLines: 2,
                     textCapitalization: TextCapitalization.sentences,
                     style: theme.textTheme.bodyMedium,
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? 'Description is required'
-                        : null,
+                    maxLines: 2,
+                    minLines: 1,
                   ),
                 ),
               ],
@@ -246,8 +248,8 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: 10,
+                    runSpacing: 10,
                     children: kSelectableIcons.map((ic) {
                       final selected = ic == _icon;
                       return GestureDetector(

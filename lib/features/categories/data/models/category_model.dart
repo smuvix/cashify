@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/category_type.dart';
+import '../../../../core/constants/category_icons.dart';
 
 class CategoryModel extends CategoryEntity {
   const CategoryModel({
@@ -33,23 +34,6 @@ class CategoryModel extends CategoryEntity {
   static const kCreatedAt = 'createdAt';
   static const kUpdatedAt = 'updatedAt';
 
-  static Map<String, dynamic> _iconToMap(IconData icon) => {
-    'codePoint': icon.codePoint,
-    'fontFamily': icon.fontFamily ?? 'MaterialIcons',
-    'fontPackage': icon.fontPackage,
-    'matchTextDirection': icon.matchTextDirection,
-  };
-
-  static IconData _iconFromMap(Map<String, dynamic>? map) {
-    if (map == null) return Icons.label_outline;
-    return IconData(
-      map['codePoint'] as int,
-      fontFamily: map['fontFamily'] as String?,
-      fontPackage: map['fontPackage'] as String?,
-      matchTextDirection: map['matchTextDirection'] as bool? ?? false,
-    );
-  }
-
   factory CategoryModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -60,7 +44,7 @@ class CategoryModel extends CategoryEntity {
       name: data[kName] as String,
       description: data[kDescription] as String? ?? '',
       type: CategoryType.fromStorageString(data[kType] as String?),
-      icon: _iconFromMap(data[kIcon] as Map<String, dynamic>?),
+      icon: iconFromStorageValue(data[kIcon]),
       color: Color(data[kColor] as int),
       isDefault: data[kIsDefault] as bool? ?? false,
       isDeleted: data[kIsDeleted] as bool? ?? false,
@@ -76,7 +60,7 @@ class CategoryModel extends CategoryEntity {
     kName: name,
     kDescription: description,
     kType: type.toStorageString(),
-    kIcon: _iconToMap(icon),
+    kIcon: iconToIndex(icon),
     kColor: color.toARGB32(),
     kIsDefault: isDefault,
     kIsDeleted: isDeleted,
