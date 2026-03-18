@@ -1,0 +1,28 @@
+import 'package:flutter/material.dart';
+
+const List<IconData> kSelectableIcons = [
+  Icons.label_outline,
+  Icons.work_outline,
+  Icons.laptop_outlined,
+  Icons.storefront_outlined,
+  Icons.trending_up_rounded,
+  Icons.card_giftcard_outlined,
+  Icons.house_outlined,
+  Icons.restaurant_outlined,
+  Icons.directions_car_outlined,
+  Icons.home_outlined,
+  Icons.bolt_outlined,
+  Icons.local_hospital_outlined,
+  Icons.school_outlined,
+  Icons.shopping_bag_outlined,
+  Icons.movie_outlined,
+  Icons.savings_outlined,
+  Icons.flight_outlined,
+  Icons.fitness_center_outlined,
+  Icons.pets_outlined,
+  Icons.phone_android_outlined,
+  Icons.sports_esports_outlined,
+  Icons.local_cafe_outlined,
+  Icons.attach_money_outlined,
+  Icons.more_horiz_rounded,
+];

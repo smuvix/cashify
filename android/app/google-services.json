@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "741134073278",
+    "project_id": "smuvix-622a7",
+    "storage_bucket": "smuvix-622a7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741134073278:android:15f0411dc25531a6d78def",
+        "android_client_info": {
+          "package_name": "com.example.cashify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "741134073278-hlacllteven3ssmenkbmls1368vghro7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO22FuTLosKr5waoJB92OsjEyqXOrcXU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "741134073278-hlacllteven3ssmenkbmls1368vghro7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "741134073278-gjhffm0ml7bmpta8irau9gl8rtmh5fe4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smuvix"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741134073278:android:60434bebd926b3c3d78def",
+        "android_client_info": {
+          "package_name": "com.example.smuvix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "741134073278-hlacllteven3ssmenkbmls1368vghro7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO22FuTLosKr5waoJB92OsjEyqXOrcXU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "741134073278-hlacllteven3ssmenkbmls1368vghro7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "741134073278-gjhffm0ml7bmpta8irau9gl8rtmh5fe4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smuvix"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
