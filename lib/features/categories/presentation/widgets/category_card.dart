@@ -20,9 +20,33 @@ class CategoryCard extends ConsumerWidget {
     return SwipeableCard(
       deleteTitle: 'Delete category?',
       deleteItemName: category.name,
+      skipConfirmDialog: true,
       onEdit: () => goToCategoryForm(context, category: category),
       onDelete: () async {
-        await ref.read(categoryProvider.notifier).deleteCategory(category.id);
+        final notifier = ref.read(categoryProvider.notifier);
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        final snackbarController = ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${category.name} deleted'),
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            action: SnackBarAction(label: 'Undo', onPressed: () {}),
+          ),
+        );
+
+        final undo = notifier.deleteCategoryWithUndo(
+          category,
+          onCommitted: snackbarController.close,
+        );
+
+        snackbarController.closed.then((reason) {
+          if (reason == SnackBarClosedReason.action) undo();
+        });
+
         return true;
       },
       child: _CategoryCardContent(category: category),

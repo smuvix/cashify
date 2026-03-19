@@ -26,6 +26,12 @@ class BudgetProgressController
     await future;
   }
 
+  Future<void> removeEntry(String budgetId) async {
+    final current = state.value;
+    if (current == null || !current.containsKey(budgetId)) return;
+    state = AsyncData(Map.of(current)..remove(budgetId));
+  }
+
   Future<void> refreshOne(String budgetId) async {
     final Map<String, BudgetProgressEntity>? current = state.when(
       data: (map) => map,

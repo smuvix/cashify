@@ -20,9 +20,33 @@ class BudgetCard extends ConsumerWidget {
     return SwipeableCard(
       deleteTitle: 'Delete budget?',
       deleteItemName: budget.name,
+      skipConfirmDialog: true,
       onEdit: () => goToBudgetForm(context, budget: budget),
       onDelete: () async {
-        await ref.read(budgetProvider.notifier).deleteBudget(budget.id);
+        final notifier = ref.read(budgetProvider.notifier);
+        final messenger = ScaffoldMessenger.of(context);
+
+        late final ScaffoldFeatureController<SnackBar, SnackBarClosedReason>
+        snackbarController;
+
+        final undo = notifier.deleteBudgetWithUndo(
+          budget,
+          onCommitted: () => snackbarController.close(),
+        );
+
+        messenger.clearSnackBars();
+        snackbarController = messenger.showSnackBar(
+          SnackBar(
+            content: Text('${budget.name} deleted'),
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            action: SnackBarAction(label: 'Undo', onPressed: undo),
+          ),
+        );
+
         return true;
       },
       child: _BudgetCardContent(budget: budget),

@@ -12,6 +12,9 @@ class BudgetController extends AsyncNotifier<List<BudgetEntity>> {
   late UpdateBudgetUseCase _update;
   late DeleteBudgetUseCase _delete;
 
+  final Set<String> _pendingDeleteIds = {};
+  Timer? _commitTimer;
+
   @override
   Future<List<BudgetEntity>> build() async {
     _watch = ref.read(watchBudgetsUseCaseProvider);
@@ -19,11 +22,16 @@ class BudgetController extends AsyncNotifier<List<BudgetEntity>> {
     _update = ref.read(updateBudgetUseCaseProvider);
     _delete = ref.read(deleteBudgetUseCaseProvider);
 
+    ref.onDispose(() => _commitTimer?.cancel());
+
     final completer = Completer<List<BudgetEntity>>();
     final sub = _watch().listen(
       (budgets) {
-        if (!completer.isCompleted) completer.complete(budgets);
-        state = AsyncData(budgets);
+        final filtered = _pendingDeleteIds.isEmpty
+            ? budgets
+            : budgets.where((b) => !_pendingDeleteIds.contains(b.id)).toList();
+        if (!completer.isCompleted) completer.complete(filtered);
+        state = AsyncData(filtered);
       },
       onError: (Object e, StackTrace st) {
         if (!completer.isCompleted) completer.completeError(e, st);
@@ -51,8 +59,44 @@ class BudgetController extends AsyncNotifier<List<BudgetEntity>> {
     Map<String, double>? categoryAllocations,
   }) => _update(current, name: name, categoryAllocations: categoryAllocations);
 
-  Future<void> deleteBudget(String id) async {
-    await _delete(id);
-    ref.invalidate(budgetProgressProvider);
+  Future<void> Function() deleteBudgetWithUndo(
+    BudgetEntity budget, {
+    Duration undoWindow = const Duration(seconds: 4),
+    void Function()? onCommitted,
+  }) {
+    _pendingDeleteIds.add(budget.id);
+    final current = state.value ?? [];
+    state = AsyncData(current.where((b) => b.id != budget.id).toList());
+
+    _commitTimer?.cancel();
+    var cancelled = false;
+
+    _commitTimer = Timer(undoWindow, () async {
+      if (cancelled) return;
+      onCommitted?.call();
+      _pendingDeleteIds.remove(budget.id);
+      try {
+        await _delete(budget.id);
+      } catch (e, st) {
+        _pendingDeleteIds.remove(budget.id);
+        state = AsyncError(e, st);
+      }
+    });
+
+    return () async {
+      cancelled = true;
+      _commitTimer?.cancel();
+      _pendingDeleteIds.remove(budget.id);
+      final restored = List<BudgetEntity>.from(state.value ?? []);
+      final insertIdx = restored.indexWhere(
+        (b) => b.month.isBefore(budget.month),
+      );
+      if (insertIdx == -1) {
+        restored.add(budget);
+      } else {
+        restored.insert(insertIdx, budget);
+      }
+      state = AsyncData(restored);
+    };
   }
 }

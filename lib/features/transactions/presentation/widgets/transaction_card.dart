@@ -143,7 +143,7 @@ class _TransactionCardContent extends ConsumerWidget {
                               loading: () => const Text('…'),
                               error: (_, _) => Text(type.label),
                               data: (cat) => Text(
-                                cat?.name ?? type.label,
+                                cat?.name ?? 'Category deleted',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),

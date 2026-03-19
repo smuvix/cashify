@@ -4,88 +4,30 @@
     <base href="$FLUTTER_BASE_HREF" />
 
     <meta charset="UTF-8" />
-    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
     <meta
       name="description"
       content="cashify - Manage your finances effortlessly."
     />
 
-    <!-- iOS meta tags & icons -->
+    <!-- PWA / iOS -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="cashify" />
     <link rel="apple-touch-icon" href="assets/icon.png" />
-
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/icon.png" />
 
     <title>cashify</title>
     <link rel="manifest" href="manifest.json" />
 
     <meta
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
       name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
 
-    <style id="splash-screen-style">
-      html {
-        height: 100%;
-      }
-
+    <style>
       body {
         margin: 0;
-        min-height: 100%;
         background-color: #fdfdf6;
-        background-size: 100% 100%;
-      }
-
-      .center {
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-      }
-
-      .contain {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-
-      .stretch {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      .cover {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .bottom {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        -ms-transform: translate(-50%, 0);
-        transform: translate(-50%, 0);
-      }
-
-      .bottomLeft {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-      }
-
-      .bottomRight {
-        position: absolute;
-        bottom: 0;
-        right: 0;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -94,30 +36,26 @@
         }
       }
 
-      /* Fade-out animation for the HTML splash */
       #splash {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         transition: opacity 0.4s ease-out;
       }
+
       #splash.hidden {
         opacity: 0;
         pointer-events: none;
       }
     </style>
 
-    <script id="splash-screen-script">
+    <script>
       function removeSplashFromWeb() {
         const splash = document.getElementById("splash");
-        const branding = document.getElementById("splash-branding");
-
-        if (splash) {
-          // Fade out, then remove from DOM
-          splash.classList.add("hidden");
-          setTimeout(() => {
-            splash.remove();
-            if (branding) branding.remove();
-          }, 400);
-        }
-
+        if (!splash) return;
+        splash.classList.add("hidden");
+        setTimeout(() => splash.remove(), 400);
         document.body.style.background = "transparent";
       }
     </script>
@@ -142,28 +80,15 @@
         "
         media="(prefers-color-scheme: dark)"
       />
-      <img
-        class="center"
-        aria-hidden="true"
-        src="splash/img/light-1x.png"
-        alt=""
-      />
+      <img aria-hidden="true" src="splash/img/light-1x.png" alt="" />
     </picture>
 
-    <!--
-      Use the Flutter loader API instead of a plain async script tag.
-      This gives us the `onEntrypointLoaded` hook so we control exactly
-      when Flutter starts and when the HTML splash is removed.
-    -->
     <script src="flutter_bootstrap.js"></script>
     <script>
       _flutter.loader.load({
         onEntrypointLoaded: async function (engineInitializer) {
-          // Engine is downloaded — Flutter is about to start.
-          // The HTML splash is still visible at this point.
           const appRunner = await engineInitializer.initializeEngine();
           await appRunner.runApp();
-          // Flutter's first frame is painted; remove the HTML splash.
           removeSplashFromWeb();
         },
       });

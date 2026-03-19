@@ -1,25 +1,7 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
-import 'web_interop.dart' if (dart.library.io) 'web_interop_stub.dart';
-
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    if (kIsWeb) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        removeSplashFromWeb();
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

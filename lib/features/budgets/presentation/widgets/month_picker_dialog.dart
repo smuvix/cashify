@@ -25,7 +25,7 @@ Future<DateTime?> showMonthPickerDialog(
       builder: (ctx, value, onChanged) =>
           _MonthPickerContent(value: value, onChanged: onChanged),
     ),
-  ).then((_) => null);
+  );
 }
 
 class _MonthPickerValue {

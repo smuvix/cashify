@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/presentation/widgets/app_scaffold.dart';
 import '../../../../core/constants/app_month.dart';
-import '../../../../core/presentation/widgets/delete_dialog.dart';
+
 import '../../../../core/utils/cashify_formatter_provider.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
 import '../../domain/entities/budget_entity.dart';
@@ -53,17 +53,30 @@ class _BudgetDetailsView extends ConsumerWidget {
 
   final BudgetEntity budget;
 
-  Future<void> _deleteBudget(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDeleteDialog(
-      context,
-      title: 'Delete budget?',
-      itemName: budget.name,
-      onConfirm: () async {
-        await ref.read(budgetProvider.notifier).deleteBudget(budget.id);
-        return true;
-      },
+  void _deleteBudget(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(budgetProvider.notifier);
+    final messenger = ScaffoldMessenger.of(context);
+
+    late final ScaffoldFeatureController<SnackBar, SnackBarClosedReason>
+    snackbarController;
+
+    final undo = notifier.deleteBudgetWithUndo(
+      budget,
+      onCommitted: () => snackbarController.close(),
     );
-    if (confirmed && context.mounted) context.pop();
+
+    context.pop();
+
+    messenger.clearSnackBars();
+    snackbarController = messenger.showSnackBar(
+      SnackBar(
+        content: Text('${budget.name} deleted'),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        action: SnackBarAction(label: 'Undo', onPressed: undo),
+      ),
+    );
   }
 
   @override

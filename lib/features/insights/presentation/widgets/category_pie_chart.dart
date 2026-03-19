@@ -114,7 +114,9 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart>
               _TappedSliceLabel(
                 slice: widget.slices[_tappedIndex!],
                 color: colors[_tappedIndex!],
-                catName: catMap[widget.slices[_tappedIndex!].categoryId]?.name,
+                catName:
+                    catMap[widget.slices[_tappedIndex!].categoryId]?.name ??
+                    'Category deleted',
                 formattedAmount: fmt.amountWithSymbol(
                   widget.slices[_tappedIndex!].amount,
                 ),
@@ -131,7 +133,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart>
                 opacity: isHighlighted ? 1.0 : 0.4,
                 child: _LegendRow(
                   color: colors[i],
-                  label: cat?.name ?? slice.categoryId,
+                  label: cat?.name ?? 'Category deleted',
                   formattedAmount: fmt.amountWithSymbol(slice.amount),
                   percentage: slice.percentage,
                   icon: cat?.icon,
@@ -195,6 +197,25 @@ class _PiePainter extends CustomPainter {
     final radius = size.width / 2;
     final innerRadius = radius * 0.42;
     const explodeOffset = 8.0;
+
+    if (slices.length == 1) {
+      final drawCenter = tappedIndex == 0
+          ? Offset(center.dx + explodeOffset, center.dy)
+          : center;
+      final path = Path()
+        ..addOval(
+          Rect.fromCircle(center: drawCenter, radius: radius * progress),
+        )
+        ..addOval(Rect.fromCircle(center: drawCenter, radius: innerRadius));
+      path.fillType = PathFillType.evenOdd;
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = colors[0]
+          ..style = PaintingStyle.fill,
+      );
+      return;
+    }
 
     double startAngle = -math.pi / 2;
 
@@ -264,7 +285,7 @@ class _TappedSliceLabel extends StatelessWidget {
 
   final CategorySlice slice;
   final Color color;
-  final String? catName;
+  final String catName;
   final String formattedAmount;
 
   @override
@@ -280,7 +301,7 @@ class _TappedSliceLabel extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          catName ?? 'Unknown',
+          catName,
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),

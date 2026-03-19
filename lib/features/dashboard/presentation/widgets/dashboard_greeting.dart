@@ -1,7 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DashboardGreeting extends StatelessWidget {
+import '../../../settings/presentation/providers/user_settings_providers.dart';
+
+class DashboardGreeting extends ConsumerWidget {
   const DashboardGreeting({super.key});
 
   String get _greeting {
@@ -11,21 +13,15 @@ class DashboardGreeting extends StatelessWidget {
     return 'Good evening';
   }
 
-  String get _displayName {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return '';
-    final name = user.displayName;
-    if (name != null && name.isNotEmpty) {
-      return name.split(' ').first;
-    }
-    final email = user.email ?? '';
-    return email.split('@').first;
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    final settingsAsync = ref.watch(userSettingsProvider);
+    final username = settingsAsync.whenOrNull(
+      data: (s) => s.username.isNotEmpty ? s.username : null,
+    );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +38,7 @@ class DashboardGreeting extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                _displayName.isEmpty ? 'Welcome back 👋' : '$_displayName 👋',
+                username != null ? '$username 👋' : 'Welcome back 👋',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),

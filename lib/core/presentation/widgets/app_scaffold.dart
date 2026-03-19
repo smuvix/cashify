@@ -237,9 +237,15 @@ class _AppScaffoldState extends State<AppScaffold> {
               context.go(_destinations[index].path);
             },
             destinations: _destinations.map((d) {
+              final icon = _railExtended
+                  ? Icon(d.icon)
+                  : Tooltip(message: d.label, child: Icon(d.icon));
+              final selectedIcon = _railExtended
+                  ? Icon(d.selectedIcon)
+                  : Tooltip(message: d.label, child: Icon(d.selectedIcon));
               return NavigationRailDestination(
-                icon: Icon(d.icon),
-                selectedIcon: Icon(d.selectedIcon),
+                icon: icon,
+                selectedIcon: selectedIcon,
                 label: Text(d.label),
               );
             }).toList(),
