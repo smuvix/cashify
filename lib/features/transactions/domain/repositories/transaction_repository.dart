@@ -12,10 +12,16 @@ abstract interface class TransactionRepository {
     required TransactionEntity transaction,
     String? accountIdToSubtract,
     String? accountIdToAdd,
-    required double amount,
+    required double subtractAmount,
+    required double addAmount,
   });
 
   Future<void> updateTransaction(TransactionEntity entity);
+
+  Future<void> updateTransactionWithBalanceCorrection({
+    required TransactionEntity oldTransaction,
+    required TransactionEntity newTransaction,
+  });
 
   Future<void> softDeleteTransaction(String id);
 

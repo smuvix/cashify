@@ -77,6 +77,22 @@ class TransactionController extends AsyncNotifier<List<TransactionEntity>> {
     notes: notes,
   );
 
+  Future<TransactionEntity> updateTransactionAmount(
+    TransactionEntity current, {
+    required double newAmount,
+    double? newTax,
+    String? categoryId,
+    DateTime? transactionDate,
+    String? notes,
+  }) => _update.withAmountUpdate(
+    current,
+    newAmount: newAmount,
+    newTax: newTax,
+    categoryId: categoryId,
+    transactionDate: transactionDate,
+    notes: notes,
+  );
+
   Future<void> Function() deleteTransactionWithUndo(
     TransactionEntity transaction, {
     Duration undoWindow = const Duration(seconds: 4),

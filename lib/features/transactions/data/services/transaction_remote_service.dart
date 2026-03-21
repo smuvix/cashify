@@ -21,7 +21,20 @@ abstract interface class TransactionRemoteService {
     required TransactionModel transaction,
     String? accountIdToSubtract,
     String? accountIdToAdd,
-    required double amount,
+    required double subtractAmount,
+    required double addAmount,
+  });
+
+  Future<void> correctTransactionWithBalanceUpdate({
+    required TransactionModel newTransaction,
+    String? reverseAccountIdToSubtract,
+    String? reverseAccountIdToAdd,
+    required double reverseSubtractAmount,
+    required double reverseAddAmount,
+    String? forwardAccountIdToSubtract,
+    String? forwardAccountIdToAdd,
+    required double forwardSubtractAmount,
+    required double forwardAddAmount,
   });
 
   Future<void> reverseTransactionWithBalanceUpdate({
@@ -217,26 +230,73 @@ class TransactionRemoteServiceImpl implements TransactionRemoteService {
     required TransactionModel transaction,
     String? accountIdToSubtract,
     String? accountIdToAdd,
-    required double amount,
+    required double subtractAmount,
+    required double addAmount,
   }) async {
     final batch = _firestore.batch();
     final now = Timestamp.now();
 
     batch.set(_txDoc(transaction.id), transaction.toFirestore());
 
-    if (accountIdToAdd != null) {
+    if (accountIdToAdd != null && addAmount != 0) {
       batch.update(_accDoc(accountIdToAdd), {
-        'currentBalance': FieldValue.increment(amount),
+        'currentBalance': FieldValue.increment(addAmount),
         'updatedAt': now,
       });
     }
 
-    if (accountIdToSubtract != null) {
+    if (accountIdToSubtract != null && subtractAmount != 0) {
       batch.update(_accDoc(accountIdToSubtract), {
-        'currentBalance': FieldValue.increment(-amount),
+        'currentBalance': FieldValue.increment(-subtractAmount),
         'updatedAt': now,
       });
     }
+
+    await batch.commit();
+  }
+
+  @override
+  Future<void> correctTransactionWithBalanceUpdate({
+    required TransactionModel newTransaction,
+    String? reverseAccountIdToSubtract,
+    String? reverseAccountIdToAdd,
+    required double reverseSubtractAmount,
+    required double reverseAddAmount,
+    String? forwardAccountIdToSubtract,
+    String? forwardAccountIdToAdd,
+    required double forwardSubtractAmount,
+    required double forwardAddAmount,
+  }) async {
+    final batch = _firestore.batch();
+    final now = Timestamp.now();
+
+    if (reverseAccountIdToAdd != null && reverseAddAmount != 0) {
+      batch.update(_accDoc(reverseAccountIdToAdd), {
+        'currentBalance': FieldValue.increment(reverseAddAmount),
+        'updatedAt': now,
+      });
+    }
+    if (reverseAccountIdToSubtract != null && reverseSubtractAmount != 0) {
+      batch.update(_accDoc(reverseAccountIdToSubtract), {
+        'currentBalance': FieldValue.increment(-reverseSubtractAmount),
+        'updatedAt': now,
+      });
+    }
+
+    if (forwardAccountIdToAdd != null && forwardAddAmount != 0) {
+      batch.update(_accDoc(forwardAccountIdToAdd), {
+        'currentBalance': FieldValue.increment(forwardAddAmount),
+        'updatedAt': now,
+      });
+    }
+    if (forwardAccountIdToSubtract != null && forwardSubtractAmount != 0) {
+      batch.update(_accDoc(forwardAccountIdToSubtract), {
+        'currentBalance': FieldValue.increment(-forwardSubtractAmount),
+        'updatedAt': now,
+      });
+    }
+
+    batch.update(_txDoc(newTransaction.id), newTransaction.toFirestore());
 
     await batch.commit();
   }

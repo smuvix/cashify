@@ -183,14 +183,35 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
       );
 
       if (_isEditing) {
-        await notifier.updateTransaction(
-          widget.transaction!,
-          categoryId: _categoryId,
-          transactionDate: _date,
-          notes: _notesController.text.trim().isEmpty
-              ? null
-              : _notesController.text.trim(),
-        );
+        final tx = widget.transaction!;
+        final newAmount = double.parse(_amountController.text);
+        final newTax = _type.hasTax && _taxController.text.trim().isNotEmpty
+            ? double.tryParse(_taxController.text)
+            : null;
+
+        final amountChanged = newAmount != tx.amount;
+        final taxChanged = newTax != tx.tax;
+        final notes = _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim();
+
+        if (amountChanged || taxChanged) {
+          await notifier.updateTransactionAmount(
+            tx,
+            newAmount: newAmount,
+            newTax: newTax,
+            categoryId: _categoryId,
+            transactionDate: _date,
+            notes: notes,
+          );
+        } else {
+          await notifier.updateTransaction(
+            tx,
+            categoryId: _categoryId,
+            transactionDate: _date,
+            notes: notes,
+          );
+        }
       } else {
         final tax = _type.hasTax && _taxController.text.trim().isNotEmpty
             ? double.tryParse(_taxController.text)
@@ -310,7 +331,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Amount, tax, account and type cannot be changed after creation.',
+                        'Account and type cannot be changed after creation.',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSecondaryContainer,
                         ),
@@ -392,11 +413,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
               children: [
                 _LabeledField(
                   label: 'Amount',
-                  required: !_isEditing,
-                  locked: _isEditing,
+                  required: true,
                   child: TextFormField(
                     controller: _amountController,
-                    enabled: !_isEditing,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -405,16 +424,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                         RegExp(r'^\d+\.?\d{0,2}'),
                       ),
                     ],
-                    decoration: _fieldDecoration(
-                      hint: '0.00',
-                      suffixIcon: _isEditing
-                          ? Icon(
-                              Icons.lock_outline_rounded,
-                              size: 16,
-                              color: colorScheme.onSurfaceVariant,
-                            )
-                          : null,
-                    ),
+                    decoration: _fieldDecoration(hint: '0.00'),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
                         return 'Amount is required';
@@ -432,13 +442,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                   const _FieldDivider(),
                   _LabeledField(
                     label: 'Tax',
-                    hint: _isEditing
-                        ? null
-                        : 'Optional — added on top of the amount',
-                    locked: _isEditing,
+                    hint: 'Optional — added on top of the amount',
                     child: TextFormField(
                       controller: _taxController,
-                      enabled: !_isEditing,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
@@ -447,16 +453,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
                           RegExp(r'^\d+\.?\d{0,2}'),
                         ),
                       ],
-                      decoration: _fieldDecoration(
-                        hint: '0.00',
-                        suffixIcon: _isEditing
-                            ? Icon(
-                                Icons.lock_outline_rounded,
-                                size: 16,
-                                color: colorScheme.onSurfaceVariant,
-                              )
-                            : null,
-                      ),
+                      decoration: _fieldDecoration(hint: '0.00'),
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) return null;
                         if (double.tryParse(v) == null) return 'Invalid amount';
@@ -492,7 +489,6 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
             ),
             const SizedBox(height: 20),
 
-            // ── Account ───────────────────────────────────────────────
             _SectionLabel(label: _isTransfer ? 'Transfer' : 'Account'),
             const SizedBox(height: 12),
             _FormCard(

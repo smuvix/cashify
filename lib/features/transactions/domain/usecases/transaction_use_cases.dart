@@ -53,21 +53,25 @@ class AdjustAccountBalancesUseCase {
 
   Future<void> call({
     required TransactionEntity transaction,
-    double? balanceAmount,
+    required double amount,
+    double? tax,
   }) {
-    final amount = balanceAmount ?? transaction.amount;
+    final taxAmount = tax ?? 0.0;
+
     return switch (transaction.type) {
       TransactionType.income => _repository.commitTransaction(
         transaction: transaction,
         accountIdToSubtract: null,
         accountIdToAdd: transaction.accountId,
-        amount: amount,
+        addAmount: amount,
+        subtractAmount: 0,
       ),
       TransactionType.expense => _repository.commitTransaction(
         transaction: transaction,
         accountIdToSubtract: transaction.accountId,
         accountIdToAdd: null,
-        amount: amount,
+        subtractAmount: amount + taxAmount,
+        addAmount: 0,
       ),
       TransactionType.transfer => () {
         if (transaction.toAccountId == null) {
@@ -79,7 +83,8 @@ class AdjustAccountBalancesUseCase {
           transaction: transaction,
           accountIdToSubtract: transaction.accountId,
           accountIdToAdd: transaction.toAccountId!,
-          amount: amount,
+          subtractAmount: amount + taxAmount,
+          addAmount: amount,
         );
       }(),
     };
@@ -125,8 +130,11 @@ class CreateTransactionUseCase {
       updatedAt: now,
     );
 
-    final balanceAmount = entity.amount + (entity.tax ?? 0.0);
-    await _adjustBalances(transaction: entity, balanceAmount: balanceAmount);
+    await _adjustBalances(
+      transaction: entity,
+      amount: entity.amount,
+      tax: entity.tax,
+    );
     return entity;
   }
 }
@@ -148,6 +156,31 @@ class UpdateTransactionUseCase {
       updatedAt: DateTime.now(),
     );
     await _repository.updateTransaction(updated);
+    return updated;
+  }
+
+  Future<TransactionEntity> withAmountUpdate(
+    TransactionEntity current, {
+    required double newAmount,
+    double? newTax,
+    String? categoryId,
+    DateTime? transactionDate,
+    String? notes,
+  }) async {
+    final updated = current.copyWith(
+      amount: newAmount,
+      tax: current.type.hasTax ? newTax : null,
+      categoryId: categoryId,
+      transactionDate: transactionDate,
+      notes: notes,
+      updatedAt: DateTime.now(),
+    );
+
+    await _repository.updateTransactionWithBalanceCorrection(
+      oldTransaction: current,
+      newTransaction: updated,
+    );
+
     return updated;
   }
 }

@@ -26,6 +26,7 @@ class _AccountFormPageState extends ConsumerState<AccountFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _balanceController;
+  late final TextEditingController _currentBalanceController;
   late AccountType _selectedType;
   bool _submitting = false;
 
@@ -36,6 +37,11 @@ class _AccountFormPageState extends ConsumerState<AccountFormPage> {
     super.initState();
     _nameController = TextEditingController(text: widget.account?.name ?? '');
     _balanceController = TextEditingController(text: _isEditing ? null : '');
+    _currentBalanceController = TextEditingController(
+      text: widget.account != null
+          ? widget.account!.currentBalance.toStringAsFixed(2)
+          : '',
+    );
     _selectedType = widget.account?.type ?? AccountType.bank;
   }
 
@@ -43,6 +49,7 @@ class _AccountFormPageState extends ConsumerState<AccountFormPage> {
   void dispose() {
     _nameController.dispose();
     _balanceController.dispose();
+    _currentBalanceController.dispose();
     super.dispose();
   }
 
@@ -239,6 +246,30 @@ class _AccountFormPageState extends ConsumerState<AccountFormPage> {
                 ),
               ],
             ),
+
+            if (_isEditing) ...[
+              const SizedBox(height: 24),
+              const _SectionLabel(label: 'Balance'),
+              const SizedBox(height: 12),
+              _FormCard(
+                children: [
+                  _LabeledField(
+                    label: 'Current balance',
+                    hint: 'Updated automatically by your transactions',
+                    child: TextFormField(
+                      controller: _currentBalanceController,
+                      enabled: false,
+                      decoration: _fieldDecoration(
+                        hint: '0.00',
+                        icon: Icons.account_balance_wallet_outlined,
+                        suffix: Icons.lock_outline_rounded,
+                      ),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ],
 
             if (!_isEditing) ...[
               const SizedBox(height: 24),

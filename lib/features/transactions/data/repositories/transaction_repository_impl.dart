@@ -2,6 +2,7 @@ import '../../data/models/transaction_model.dart';
 import '../../data/services/transaction_remote_service.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/entities/transaction_query.dart';
+import '../../domain/entities/transaction_type.dart';
 import '../../domain/repositories/transaction_repository.dart';
 
 class TransactionRepositoryImpl implements TransactionRepository {
@@ -26,17 +27,45 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required TransactionEntity transaction,
     String? accountIdToSubtract,
     String? accountIdToAdd,
-    required double amount,
+    required double subtractAmount,
+    required double addAmount,
   }) => _service.commitTransactionWithBalanceUpdate(
     transaction: TransactionModel.fromEntity(transaction),
     accountIdToSubtract: accountIdToSubtract,
     accountIdToAdd: accountIdToAdd,
-    amount: amount,
+    subtractAmount: subtractAmount,
+    addAmount: addAmount,
   );
 
   @override
   Future<void> updateTransaction(TransactionEntity entity) =>
       _service.updateTransaction(TransactionModel.fromEntity(entity));
+
+  @override
+  Future<void> updateTransactionWithBalanceCorrection({
+    required TransactionEntity oldTransaction,
+    required TransactionEntity newTransaction,
+  }) {
+    final (oldSubtract, oldAdd, oldSubId, oldAddId) = _balanceSides(
+      oldTransaction,
+    );
+
+    final (newSubtract, newAdd, newSubId, newAddId) = _balanceSides(
+      newTransaction,
+    );
+
+    return _service.correctTransactionWithBalanceUpdate(
+      newTransaction: TransactionModel.fromEntity(newTransaction),
+      reverseAccountIdToSubtract: oldAddId,
+      reverseAccountIdToAdd: oldSubId,
+      reverseSubtractAmount: oldAdd,
+      reverseAddAmount: oldSubtract,
+      forwardAccountIdToSubtract: newSubId,
+      forwardAccountIdToAdd: newAddId,
+      forwardSubtractAmount: newSubtract,
+      forwardAddAmount: newAdd,
+    );
+  }
 
   @override
   Future<void> softDeleteTransaction(String id) =>
@@ -54,4 +83,18 @@ class TransactionRepositoryImpl implements TransactionRepository {
     accountIdToAdd: accountIdToAdd,
     amount: amount,
   );
+
+  (double, double, String?, String?) _balanceSides(TransactionEntity t) {
+    final tax = t.tax ?? 0.0;
+    return switch (t.type) {
+      TransactionType.income => (0.0, t.amount, null, t.accountId),
+      TransactionType.expense => (t.amount + tax, 0.0, t.accountId, null),
+      TransactionType.transfer => (
+        t.amount + tax,
+        t.amount,
+        t.accountId,
+        t.toAccountId,
+      ),
+    };
+  }
 }
