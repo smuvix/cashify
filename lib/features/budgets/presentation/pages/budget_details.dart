@@ -22,11 +22,11 @@ class BudgetDetailsPage extends ConsumerWidget {
 
     return budgetsAsync.when(
       loading: () => const AppScaffold(
-        title: 'Budget',
+        title: Text('Budget'),
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => AppScaffold(
-        title: 'Budget',
+        title: Text('Budget'),
         body: Center(child: Text('$e')),
       ),
       data: (budgets) {
@@ -37,7 +37,7 @@ class BudgetDetailsPage extends ConsumerWidget {
 
         if (budget == null) {
           return const AppScaffold(
-            title: 'Budget',
+            title: Text('Budget'),
             body: Center(child: Text('Budget not found.')),
           );
         }
@@ -92,7 +92,7 @@ class _BudgetDetailsView extends ConsumerWidget {
         budget.month.year == now.year && budget.month.month == now.month;
 
     return AppScaffold(
-      title: budget.name,
+      title: Text(budget.name),
       actions: [
         IconButton(
           tooltip: 'Edit budget',

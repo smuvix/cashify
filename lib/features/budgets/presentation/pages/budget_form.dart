@@ -163,7 +163,7 @@ class _BudgetFormPageState extends ConsumerState<BudgetFormPage> {
     final categoriesAsync = ref.watch(categoryProvider);
 
     return AppScaffold(
-      title: _isEditing ? 'Edit budget' : 'New budget',
+      title: Text(_isEditing ? 'Edit budget' : 'New budget'),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12),

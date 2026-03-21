@@ -17,7 +17,7 @@ class AccountsPage extends ConsumerWidget {
     final totalAsync = ref.watch(totalBalanceProvider);
 
     return AppScaffold(
-      title: 'Accounts',
+      title: Text('Accounts'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => goToAccountForm(context),
         icon: const Icon(Icons.add),

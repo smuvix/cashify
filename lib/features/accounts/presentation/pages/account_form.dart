@@ -104,7 +104,7 @@ class _AccountFormPageState extends ConsumerState<AccountFormPage> {
     final colorScheme = theme.colorScheme;
 
     return AppScaffold(
-      title: _isEditing ? 'Edit account' : 'New account',
+      title: Text(_isEditing ? 'Edit account' : 'New account'),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12),

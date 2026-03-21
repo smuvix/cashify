@@ -256,7 +256,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
         .firstWhere((c) => c?.id == _categoryId, orElse: () => null);
 
     return AppScaffold(
-      title: _isEditing ? 'Edit transaction' : 'New transaction',
+      title: Text(_isEditing ? 'Edit transaction' : 'New transaction'),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12),

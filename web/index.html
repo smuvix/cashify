@@ -12,50 +12,86 @@
     <!-- PWA / iOS -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="cashify" />
-    <link rel="apple-touch-icon" href="assets/icon.png" />
-    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Cashify" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_16x16.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="favicon_192x192.png" />
 
-    <title>cashify</title>
+    <title>Cashify</title>
     <link rel="manifest" href="manifest.json" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <style id="splash-screen-style">
+      html {
+        height: 100%;
+      }
 
-    <style>
       body {
         margin: 0;
-        background-color: #fdfdf6;
+        min-height: 100%;
+        background-color: #fef7ff;
+        background-size: 100% 100%;
+      }
+
+      .center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+
+      .contain {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .stretch {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .cover {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .bottom {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        -ms-transform: translate(-50%, 0);
+        transform: translate(-50%, 0);
+      }
+
+      .bottomLeft {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+
+      .bottomRight {
+        position: absolute;
+        bottom: 0;
+        right: 0;
       }
 
       @media (prefers-color-scheme: dark) {
         body {
-          background-color: #11140e;
+          background-color: #141218;
         }
       }
-
-      #splash {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        transition: opacity 0.4s ease-out;
-      }
-
-      #splash.hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
     </style>
-
-    <script>
+    <script id="splash-screen-script">
       function removeSplashFromWeb() {
-        const splash = document.getElementById("splash");
-        if (!splash) return;
-        splash.classList.add("hidden");
-        setTimeout(() => splash.remove(), 400);
+        document.getElementById("splash")?.remove();
+        document.getElementById("splash-branding")?.remove();
         document.body.style.background = "transparent";
       }
     </script>
@@ -80,18 +116,13 @@
         "
         media="(prefers-color-scheme: dark)"
       />
-      <img aria-hidden="true" src="splash/img/light-1x.png" alt="" />
+      <img
+        class="center"
+        aria-hidden="true"
+        src="splash/img/light-1x.png"
+        alt=""
+      />
     </picture>
-
     <script src="flutter_bootstrap.js"></script>
-    <script>
-      _flutter.loader.load({
-        onEntrypointLoaded: async function (engineInitializer) {
-          const appRunner = await engineInitializer.initializeEngine();
-          await appRunner.runApp();
-          removeSplashFromWeb();
-        },
-      });
-    </script>
   </body>
 </html>

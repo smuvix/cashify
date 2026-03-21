@@ -34,6 +34,13 @@ class CashifyFormatter {
   }
 
   String date(DateTime dt) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final input = DateTime(dt.year, dt.month, dt.day);
+
+    if (input == today) return 'Today';
+    if (input == today.subtract(const Duration(days: 1))) return 'Yesterday';
+
     try {
       return DateFormat(_settings.dateFormat).format(dt);
     } catch (_) {

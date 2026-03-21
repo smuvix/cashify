@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/presentation/widgets/app_scaffold.dart';
 import '../widgets/dashboard_balance_card.dart';
@@ -16,7 +17,15 @@ class DashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
-      title: 'Cashify',
+      title: Text(
+        'Cashify',
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.primary,
+          letterSpacing: -0.5,
+        ),
+      ),
       actions: [
         IconButton(
           tooltip: 'Insights',

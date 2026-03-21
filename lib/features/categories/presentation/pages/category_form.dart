@@ -103,7 +103,7 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
     final colorScheme = theme.colorScheme;
 
     return AppScaffold(
-      title: _isEditing ? 'Edit category' : 'New category',
+      title: Text(_isEditing ? 'Edit category' : 'New category'),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12),

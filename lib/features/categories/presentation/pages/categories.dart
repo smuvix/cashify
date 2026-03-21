@@ -23,7 +23,7 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return AppScaffold(
-      title: 'Categories',
+      title: Text('Categories'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => goToCategoryForm(context),
         icon: const Icon(Icons.add),

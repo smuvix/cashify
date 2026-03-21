@@ -20,7 +20,7 @@ class Settings extends ConsumerWidget {
     final settingsAsync = ref.watch(userSettingsProvider);
 
     return AppScaffold(
-      title: 'Settings',
+      title: Text('Settings'),
       body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(

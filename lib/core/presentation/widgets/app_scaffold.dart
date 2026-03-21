@@ -12,7 +12,7 @@ class AppScaffold extends StatefulWidget {
     this.bottomSheet,
   });
 
-  final String title;
+  final Widget title;
   final Widget body;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
@@ -154,7 +154,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: widget.title,
         actions: widget.actions,
         backgroundColor: colorTheme.surface,
         shape: Border(
@@ -221,7 +221,7 @@ class _AppScaffoldState extends State<AppScaffold> {
               ),
             ),
             const SizedBox(width: 8),
-            Text(widget.title),
+            widget.title,
           ],
         ),
         automaticallyImplyLeading: false,

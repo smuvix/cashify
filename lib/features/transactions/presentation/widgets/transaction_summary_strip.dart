@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/cashify_formatter_provider.dart';
-import '../../../../core/constants/app_month.dart';
 import '../../domain/entities/transaction_type.dart';
 
 class TransactionSummaryStrip extends ConsumerWidget {
@@ -20,6 +19,8 @@ class TransactionSummaryStrip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fmt = ref.watch(cashifyFormatterProvider);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     double income = 0, expense = 0;
     for (final tx in transactions) {
@@ -39,8 +40,41 @@ class TransactionSummaryStrip extends ConsumerWidget {
         children: [
           if (dateFrom != null && dateTo != null) ...[
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _DateRangeLabel(dateFrom: dateFrom!, dateTo: dateTo!),
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withAlpha(80),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.date_range_outlined,
+                          size: 13,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${fmt.date(dateFrom!)} – ${fmt.date(dateTo!)}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
           Row(
@@ -80,48 +114,6 @@ class TransactionSummaryStrip extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _DateRangeLabel extends StatelessWidget {
-  const _DateRangeLabel({required this.dateFrom, required this.dateTo});
-
-  final DateTime dateFrom;
-  final DateTime dateTo;
-
-  String get _label {
-    if (dateFrom.year == dateTo.year && dateFrom.month == dateTo.month) {
-      final month = AppMonth.of(dateFrom);
-      return '${month.fullName} ${dateFrom.year}';
-    }
-    String fmt(DateTime d) =>
-        '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
-    return '${fmt(dateFrom)} – ${fmt(dateTo)}';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Row(
-      children: [
-        Icon(
-          Icons.calendar_today_outlined,
-          size: 12,
-          color: colorScheme.primary,
-        ),
-        const SizedBox(width: 5),
-        Text(
-          _label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: colorScheme.primary,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.8,
-          ),
-        ),
-      ],
     );
   }
 }

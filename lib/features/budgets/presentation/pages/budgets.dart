@@ -15,7 +15,7 @@ class BudgetsPage extends ConsumerWidget {
     final budgetsAsync = ref.watch(budgetProvider);
 
     return AppScaffold(
-      title: 'Budgets',
+      title: Text('Budgets'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => goToBudgetForm(context),
         icon: const Icon(Icons.add),
@@ -63,7 +63,7 @@ class BudgetsPage extends ConsumerWidget {
                 (b) => b.month.year == now.year && b.month.month == now.month,
               )
               .toList();
-          final past = budgets
+          final other = budgets
               .where(
                 (b) =>
                     !(b.month.year == now.year && b.month.month == now.month),
@@ -79,11 +79,11 @@ class BudgetsPage extends ConsumerWidget {
                   itemBuilder: (_, i) => BudgetCard(budget: current[i]),
                 ),
               ],
-              if (past.isNotEmpty) ...[
-                const _SectionHeader(label: 'Past budgets'),
+              if (other.isNotEmpty) ...[
+                const _SectionHeader(label: 'Other budgets'),
                 SliverList.builder(
-                  itemCount: past.length,
-                  itemBuilder: (_, i) => BudgetCard(budget: past[i]),
+                  itemCount: other.length,
+                  itemBuilder: (_, i) => BudgetCard(budget: other[i]),
                 ),
               ],
               const SliverToBoxAdapter(child: SizedBox(height: 100)),

@@ -15,7 +15,7 @@ class GoalsPage extends ConsumerWidget {
     final goalsAsync = ref.watch(goalProvider);
 
     return AppScaffold(
-      title: 'Goals',
+      title: Text('Goals'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => goToGoalForm(context),
         icon: const Icon(Icons.add),

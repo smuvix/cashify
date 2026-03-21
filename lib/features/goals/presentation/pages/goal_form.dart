@@ -177,7 +177,7 @@ class _GoalFormPageState extends ConsumerState<GoalFormPage> {
     final fmt = ref.watch(cashifyFormatterProvider);
 
     return AppScaffold(
-      title: _isEditing ? 'Edit goal' : 'New goal',
+      title: Text(_isEditing ? 'Edit goal' : 'New goal'),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12),

@@ -69,7 +69,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return AppScaffold(
-      title: 'Transactions',
+      title: Text('Transactions'),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),

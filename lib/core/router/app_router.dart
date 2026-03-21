@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smuvix_auth/application/providers/auth_providers.dart';
@@ -23,17 +24,19 @@ import '../../features/transactions/presentation/pages/transactions.dart';
 import '../../features/accounts/presentation/pages/accounts.dart';
 import '../../features/categories/presentation/pages/categories.dart';
 import '../../features/settings/presentation/pages/settings.dart';
-import '../presentation/pages/splash.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterNotifier(ref);
+
   return GoRouter(
     refreshListenable: notifier,
-    initialLocation: '/splash',
+
+    initialLocation: '/auth',
+
     routes: [
-      GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/auth', builder: (_, _) => const AuthFlow()),
       GoRoute(path: '/dashboard', builder: (_, _) => const DashboardPage()),
+
       GoRoute(
         path: '/budgets',
         builder: (_, _) => const BudgetsPage(),
@@ -50,6 +53,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
       GoRoute(
         path: '/transactions',
         builder: (_, _) => const TransactionsPage(),
@@ -62,6 +66,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
       GoRoute(
         path: '/goals',
         builder: (_, _) => const GoalsPage(),
@@ -73,6 +78,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
       GoRoute(
         path: '/accounts',
         builder: (_, _) => const AccountsPage(),
@@ -84,6 +90,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
       GoRoute(
         path: '/categories',
         builder: (_, _) => const CategoriesPage(),
@@ -95,9 +102,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
       GoRoute(path: '/insights', builder: (_, _) => const InsightsPage()),
       GoRoute(path: '/settings', builder: (_, _) => const Settings()),
     ],
+
     redirect: (context, state) => notifier._redirect(state),
   );
 });
@@ -106,27 +115,34 @@ class _RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
   _RouterNotifier(this._ref) {
-    _ref.listen<AsyncValue>(currentUserProvider, (_, _) => notifyListeners());
+    _ref.listen<AsyncValue>(currentUserProvider, (_, next) {
+      if (!next.isLoading) {
+        FlutterNativeSplash.remove();
+      }
+      notifyListeners();
+    });
   }
 
   String? _redirect(GoRouterState state) {
     final authState = _ref.read(currentUserProvider);
-    final location = state.uri.toString();
-    final isOnSplash = location == '/splash';
 
-    if (authState.isLoading) {
-      return isOnSplash ? null : '/splash';
+    if (authState.isLoading || !authState.hasValue) {
+      return null;
     }
 
-    final isLoggedIn = authState.value != null;
+    final user = authState.value;
+    final isLoggedIn = user != null;
+
+    final location = state.uri.toString();
     final isOnAuth = location == '/auth';
 
-    if (isOnSplash) {
-      return isLoggedIn ? '/dashboard' : '/auth';
+    if (!isLoggedIn && !isOnAuth) {
+      return '/auth';
     }
 
-    if (!isLoggedIn && !isOnAuth) return '/auth';
-    if (isLoggedIn && isOnAuth) return '/dashboard';
+    if (isLoggedIn && isOnAuth) {
+      return '/dashboard';
+    }
 
     return null;
   }

@@ -66,7 +66,7 @@ class _InsightsPageState extends ConsumerState<InsightsPage> {
     final selection = ref.watch(insightSelectionProvider);
 
     return AppScaffold(
-      title: 'Insights',
+      title: Text('Insights'),
       body: Column(
         children: [
           Container(
@@ -190,7 +190,6 @@ class _InsightBody extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
               TransactionSummaryStrip(transactions: report.transactions),
               const SizedBox(height: 28),
               _SectionLabel(label: 'Income vs Expenses'),
