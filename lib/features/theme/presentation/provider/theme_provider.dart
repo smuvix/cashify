@@ -42,37 +42,49 @@ final themeModeProvider =
       ThemeModeController.new,
     );
 
-final lightThemeProvider = Provider<ThemeData>(
-  (_) => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.light,
-    ),
-    appBarTheme: const AppBarTheme(
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
-      elevation: 0,
-    ),
-  ),
+SnackBarThemeData _snackBarTheme(ColorScheme colors) => SnackBarThemeData(
+  behavior: SnackBarBehavior.floating,
+  backgroundColor: colors.surfaceContainer,
+  contentTextStyle: TextStyle(color: colors.onSurface),
+  closeIconColor: Colors.red,
+  showCloseIcon: true,
 );
 
-final darkThemeProvider = Provider<ThemeData>(
-  (_) => ThemeData(
+final lightThemeProvider = Provider<ThemeData>((_) {
+  final colors = ColorScheme.fromSeed(
+    seedColor: Colors.blue,
+    brightness: Brightness.light,
+  );
+  return ThemeData(
     useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.dark,
-    ),
+    brightness: Brightness.light,
+    colorScheme: colors,
     appBarTheme: const AppBarTheme(
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       elevation: 0,
     ),
-  ),
-);
+    snackBarTheme: _snackBarTheme(colors),
+  );
+});
+
+final darkThemeProvider = Provider<ThemeData>((_) {
+  final colors = ColorScheme.fromSeed(
+    seedColor: Colors.blue,
+    brightness: Brightness.dark,
+  );
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: colors,
+    appBarTheme: const AppBarTheme(
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+    ),
+    snackBarTheme: _snackBarTheme(colors),
+  );
+});
 
 final resolvedThemeModeProvider = Provider<ThemeMode>(
   (ref) => ref.watch(themeModeProvider).mode,

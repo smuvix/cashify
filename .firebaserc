@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "smuvix-622a7"
-  }
+  },
+  "targets": {
+    "smuvix-622a7": {
+      "hosting": {
+        "cashify-site": [
+          "smuvix-cashify"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

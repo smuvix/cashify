@@ -8,6 +8,7 @@ import '../../domain/entities/transaction_query.dart';
 import '../../domain/entities/transaction_type.dart';
 import '../providers/transaction_providers.dart';
 import '../widgets/transaction_card.dart';
+import '../widgets/transaction_export_button.dart';
 import 'transaction_form.dart';
 import '../widgets/transaction_summary_strip.dart';
 
@@ -73,20 +74,29 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
-          child: IconButton(
-            tooltip: _isCustomRange ? 'Clear date filter' : 'Filter by date',
-            icon: Icon(
-              _isCustomRange
-                  ? Icons.calendar_month
-                  : Icons.calendar_month_outlined,
-              color: _isCustomRange ? colorScheme.primary : null,
-            ),
-            style: _isCustomRange
-                ? IconButton.styleFrom(
-                    backgroundColor: colorScheme.primaryContainer,
-                  )
-                : null,
-            onPressed: _isCustomRange ? _clearDateFilter : _pickDateRange,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const TransactionExportButton(),
+              const SizedBox(width: 8.0),
+              IconButton(
+                tooltip: _isCustomRange
+                    ? 'Clear date filter'
+                    : 'Filter by date',
+                icon: Icon(
+                  _isCustomRange
+                      ? Icons.calendar_month
+                      : Icons.calendar_month_outlined,
+                  color: _isCustomRange ? colorScheme.primary : null,
+                ),
+                style: _isCustomRange
+                    ? IconButton.styleFrom(
+                        backgroundColor: colorScheme.primaryContainer,
+                      )
+                    : null,
+                onPressed: _isCustomRange ? _clearDateFilter : _pickDateRange,
+              ),
+            ],
           ),
         ),
       ],

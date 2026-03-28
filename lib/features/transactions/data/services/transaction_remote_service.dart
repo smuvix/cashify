@@ -79,6 +79,9 @@ class TransactionRemoteServiceImpl implements TransactionRemoteService {
 
   DocumentReference<Map<String, dynamic>> _accDoc(String id) => _accCol.doc(id);
 
+  DateTime _endOfDay(DateTime date) =>
+      DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+
   Query<Map<String, dynamic>> _buildQuery(TransactionQuery q) {
     Query<Map<String, dynamic>> query = _txCol.where(
       TransactionModel.kIsDeleted,
@@ -113,7 +116,7 @@ class TransactionRemoteServiceImpl implements TransactionRemoteService {
     if (q.dateTo != null) {
       query = query.where(
         TransactionModel.kTransactionDate,
-        isLessThanOrEqualTo: Timestamp.fromDate(q.dateTo!),
+        isLessThanOrEqualTo: Timestamp.fromDate(_endOfDay(q.dateTo!)),
       );
     }
 
@@ -145,7 +148,7 @@ class TransactionRemoteServiceImpl implements TransactionRemoteService {
     if (q.dateTo != null) {
       toQuery = toQuery.where(
         TransactionModel.kTransactionDate,
-        isLessThanOrEqualTo: Timestamp.fromDate(q.dateTo!),
+        isLessThanOrEqualTo: Timestamp.fromDate(_endOfDay(q.dateTo!)),
       );
     }
     toQuery = toQuery.orderBy(
