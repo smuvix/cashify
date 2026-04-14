@@ -1,11 +1,13 @@
-import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:web/web.dart' as web;
+
+import 'pdf_downloader_impl.dart';
 
 class PdfExportService {
+  static final _downloader = createPdfDownloader();
+
   static Future<void> export({
     required String title,
     required List<Map<String, dynamic>> data,
@@ -15,7 +17,8 @@ class PdfExportService {
     }
 
     final pdfBytes = await _generatePdf(title, data);
-    _downloadPdf(pdfBytes, title);
+
+    await _downloader.download(pdfBytes, title);
   }
 
   static Future<Uint8List> _generatePdf(
@@ -43,7 +46,6 @@ class PdfExportService {
               style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
           ),
-
           pw.SizedBox(height: 20),
           pw.TableHelper.fromTextArray(
             headers: headers,
@@ -52,37 +54,17 @@ class PdfExportService {
             headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
           ),
         ],
-        footer: (context) {
-          return pw.Align(
-            alignment: pw.Alignment.centerRight,
-            child: pw.Text(
-              'Page ${context.pageNumber} of ${context.pagesCount}',
-              style: pw.TextStyle(fontSize: 10),
-            ),
-          );
-        },
+        footer: (context) => pw.Align(
+          alignment: pw.Alignment.centerRight,
+          child: pw.Text(
+            'Page ${context.pageNumber} of ${context.pagesCount}',
+            style: pw.TextStyle(fontSize: 10),
+          ),
+        ),
       ),
     );
 
     return pdf.save();
-  }
-
-  static void _downloadPdf(Uint8List bytes, String title) {
-    final safeTitle = title.replaceAll(' ', '_').toLowerCase();
-
-    final blob = web.Blob([bytes.toJS].toJS);
-    final url = web.URL.createObjectURL(blob);
-
-    final anchor = web.HTMLAnchorElement()
-      ..href = url
-      ..download = '${safeTitle}_${DateTime.now().millisecondsSinceEpoch}.pdf';
-
-    web.document.body!.append(anchor);
-
-    anchor.click();
-
-    anchor.remove();
-    web.URL.revokeObjectURL(url);
   }
 
   static String _formatValue(dynamic value) {
